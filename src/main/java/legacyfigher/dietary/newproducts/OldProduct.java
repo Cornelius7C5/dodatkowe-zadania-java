@@ -5,91 +5,50 @@ import java.util.UUID;
 
 public class OldProduct {
 
-    UUID serialNumber = UUID.randomUUID();
+  UUID serialNumber = UUID.randomUUID();
 
-    BigDecimal price;
-    private String desc;
+  Price price;
+  Description description;
+  Counter counter;
 
-    String longDesc;
+  public OldProduct(BigDecimal price, String desc, String longDesc, Integer counter) {
+    this.price = Price.of(price);
+    this.description = Description.of(desc, longDesc);
+    this.counter = Counter.of(counter);
+  }
 
-    Integer counter;
-
-
-
-    void decrementCounter() {
-        if (price != null && price.signum() > 0) {
-
-            if
-            (counter == null) {
-                throw new IllegalStateException("null counter");
-            }
-            counter = counter - 1;
-            if (counter < 0) {
-                throw new IllegalStateException("Negative counter");
-            }
-        } else {
-            throw new IllegalStateException("Invalid price");
-
-        }
+  void decrementCounter() {
+    if (this.price.isValid()) {
+      counter.decrement();
+    } else {
+      throw new IllegalStateException("Invalid price");
 
     }
 
-    public OldProduct(BigDecimal price, String desc, String longDesc, Integer counter) {
-        this.price = price;
-        this.desc = desc;
-        this.longDesc = longDesc;
-        this.counter = counter;
+  }
+
+  void incrementCounter() {
+    if (price.isValid()) {
+      counter.increment();
+    } else {
+      throw new IllegalStateException("Invalid price");
+
     }
+  }
 
-    void incrementCounter() {
-        if (price != null && price.signum() > 0) {
-            if (counter == null) {
-                throw new IllegalStateException("null counter");
-            }
-            if (counter +1 < 0) {
-                throw new IllegalStateException("Negative counter");
-            }
-            counter = counter + 1;
+  void changePriceTo(BigDecimal newPrice) {
+    this.counter.validate();
 
-        }
-        else {
-            throw new IllegalStateException("Invalid price");
+    this.price.update(newPrice);
+  }
 
-        }
-    }
+  void replaceCharFromDesc(String charToReplace, String replaceWith) {
+        description.replace(charToReplace, replaceWith);
+  }
 
-    void changePriceTo(BigDecimal newPrice) {
-        if (counter == null) {
-            throw new IllegalStateException("null counter");
-        }
-        if
-        (counter > 0) {
-            if (newPrice == null) {
-                throw new IllegalStateException("new price null");
-            }
-            this.price = newPrice;
-        }
-    }
-
-    void replaceCharFromDesc(String charToReplace, String replaceWith) {
-        if (longDesc == null || longDesc.isEmpty() ||
-
-                desc == null || desc.isEmpty()) {
-            throw new IllegalStateException("null or empty desc");
-        }
-        longDesc = longDesc.replace(charToReplace, replaceWith);
-        desc = desc.replace(charToReplace, replaceWith);
-    }
-
-    String formatDesc() {
-        if (longDesc == null ||
-                longDesc.isEmpty() ||
-                desc == null
-                || desc.isEmpty() ) {
-            return "";
-        }
-        return desc + " *** " + longDesc;
-    }
+  String formatDesc() {
+    return description.getFormatted();
+  }
 
 
 }
